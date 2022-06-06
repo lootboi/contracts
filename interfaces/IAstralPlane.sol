@@ -2,7 +2,7 @@
 
 pragma solidity 0.6.12;
 
-interface IBoardroom {
+interface IAstralPlane {
     function balanceOf(address _member) external view returns (uint256);
 
     function earned(address _member) external view returns (uint256);
@@ -15,7 +15,7 @@ interface IBoardroom {
 
     function nextEpochPoint() external view returns (uint256);
 
-    function getGrapePrice() external view returns (uint256);
+    function getGalaxyPrice() external view returns (uint256);
 
     function setOperator(address _operator) external;
 

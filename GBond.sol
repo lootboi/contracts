@@ -6,28 +6,16 @@ import "@openzeppelin/contracts/token/ERC20/ERC20Burnable.sol";
 
 import "./owner/Operator.sol";
 
-/*
-
- ██████╗ ██████╗  █████╗ ██████╗ ███████╗    ███████╗██╗███╗   ██╗ █████╗ ███╗   ██╗ ██████╗███████╗
-██╔════╝ ██╔══██╗██╔══██╗██╔══██╗██╔════╝    ██╔════╝██║████╗  ██║██╔══██╗████╗  ██║██╔════╝██╔════╝
-██║  ███╗██████╔╝███████║██████╔╝█████╗      █████╗  ██║██╔██╗ ██║███████║██╔██╗ ██║██║     █████╗  
-██║   ██║██╔══██╗██╔══██║██╔═══╝ ██╔══╝      ██╔══╝  ██║██║╚██╗██║██╔══██║██║╚██╗██║██║     ██╔══╝  
-╚██████╔╝██║  ██║██║  ██║██║     ███████╗    ██║     ██║██║ ╚████║██║  ██║██║ ╚████║╚██████╗███████╗
- ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚══════╝    ╚═╝     ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝╚══════╝
-                                                                                                    
-*/
-
-
 contract GBond is ERC20Burnable, Operator {
     /**
-     * @notice Constructs the GRAPE Bond ERC-20 contract.
+     * @notice Constructs the GLXY Bond ERC-20 contract.
      */
-    constructor() public ERC20("GBOND", "GBOND") {}
+    constructor() public ERC20("Galaxy Bond", "GBOND") {}
 
     /**
-     * @notice Operator mints grape bonds to a recipient
+     * @notice Operator mints galaxy bonds to a recipient
      * @param recipient_ The address of recipient
-     * @param amount_ The amount of grape bonds to mint to
+     * @param amount_ The amount of galaxy bonds to mint to
      * @return whether the process has been done
      */
     function mint(address recipient_, uint256 amount_) public onlyOperator returns (bool) {

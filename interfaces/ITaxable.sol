@@ -25,7 +25,7 @@ interface ITaxable {
 
     function includeAddress(address _address) external returns (bool);
 
-    function setGrapeOracle(address _grapeOracle) external;
+    function setGalaxyOracle(address _galaxyOracle) external;
 
     function setTaxOffice(address _taxOffice) external;
 }

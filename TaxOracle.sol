@@ -9,53 +9,53 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 contract TaxOracle is Ownable {
     using SafeMath for uint256;
 
-    IERC20 public grape;
-    IERC20 public mim;
+    IERC20 public galaxy;
+    IERC20 public tri;
     address public pair;
 
     constructor(
-        address _grape,
-        address _mim,
+        address _galaxy,
+        address _tri,
         address _pair
     ) public {
-        require(_grape != address(0), "grape address cannot be 0");
-        require(_mim != address(0), "mim address cannot be 0");
+        require(_galaxy != address(0), "galaxy address cannot be 0");
+        require(_tri != address(0), "tri address cannot be 0");
         require(_pair != address(0), "pair address cannot be 0");
-        grape = IERC20(_grape);
-        mim = IERC20(_mim);
+        galaxy = IERC20(_galaxy);
+        tri = IERC20(_tri);
         pair = _pair;
     }
 
     function consult(address _token, uint256 _amountIn) external view returns (uint144 amountOut) {
-        require(_token == address(grape), "token needs to be grape");
-        uint256 grapeBalance = grape.balanceOf(pair);
-        uint256 mimBalance = mim.balanceOf(pair);
-        return uint144(grapeBalance.mul(_amountIn).div(mimBalance));
+        require(_token == address(galaxy), "token needs to be galaxy");
+        uint256 galaxyBalance = galaxy.balanceOf(pair);
+        uint256 triBalance = tri.balanceOf(pair);
+        return uint144(galaxyBalance.mul(_amountIn).div(triBalance));
     }
 
-    function getGrapeBalance() external view returns (uint256) {
-	return grape.balanceOf(pair);
+    function getGalaxyBalance() external view returns (uint256) {
+	return galaxy.balanceOf(pair);
     }
 
-    function getMimBalance() external view returns (uint256) {
-	return mim.balanceOf(pair);
+    function getTriBalance() external view returns (uint256) {
+	return tri.balanceOf(pair);
     }
 
     function getPrice() external view returns (uint256) {
-        uint256 grapeBalance = grape.balanceOf(pair);
-        uint256 mimBalance = mim.balanceOf(pair);
-        return grapeBalance.mul(1e18).div(mimBalance);
+        uint256 galaxyBalance = galaxy.balanceOf(pair);
+        uint256 triBalance = tri.balanceOf(pair);
+        return galaxyBalance.mul(1e18).div(triBalance);
     }
 
 
-    function setGrape(address _grape) external onlyOwner {
-        require(_grape != address(0), "grape address cannot be 0");
-        grape = IERC20(_grape);
+    function setGalaxy(address _galaxy) external onlyOwner {
+        require(_galaxy != address(0), "galaxy address cannot be 0");
+        galaxy = IERC20(_galaxy);
     }
 
-    function setMim(address _mim) external onlyOwner {
-        require(_mim != address(0), "mim address cannot be 0");
-        mim = IERC20(_mim);
+    function setTri(address _tri) external onlyOwner {
+        require(_tri != address(0), "tri address cannot be 0");
+        tri = IERC20(_tri);
     }
 
     function setPair(address _pair) external onlyOwner {

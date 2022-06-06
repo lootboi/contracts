@@ -6,8 +6,8 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 
-// Note that this pool has no minter key of GRAPE (rewards).
-// Instead, the governance will call GRAPE distributeReward method and send reward to this pool at the beginning.
+// Note that this pool has no minter key of GLXY (rewards).
+// Instead, the governance will call GLXY distributeReward method and send reward to this pool at the beginning.
 contract GrapeRewardPool {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
@@ -30,7 +30,7 @@ contract GrapeRewardPool {
         bool isStarted; // if lastRewardTime has passed
     }
 
-    IERC20 public grape;
+    IERC20 public galaxy;
 
     // Info of each pool.
     PoolInfo[] public poolInfo;
@@ -41,7 +41,7 @@ contract GrapeRewardPool {
     // Total allocation points. Must be the sum of all allocation points in all pools.
     uint256 public totalAllocPoint = 0;
 
-    // The time when GRAPE mining starts.
+    // The time when GLXY mining starts.
     uint256 public poolStartTime;
 
     uint256[] public epochTotalRewards = [10800 ether, 10800 ether];
@@ -57,9 +57,9 @@ contract GrapeRewardPool {
     event EmergencyWithdraw(address indexed user, uint256 indexed pid, uint256 amount);
     event RewardPaid(address indexed user, uint256 amount);
 
-    constructor(address _grape, uint256 _poolStartTime) public {
+    constructor(address _galaxy, uint256 _poolStartTime) public {
         require(block.timestamp < _poolStartTime, "late");
-        if (_grape != address(0)) grape = IERC20(_grape);
+        if (_galaxy != address(0)) galaxy = IERC20(_galaxy);
 
         poolStartTime = _poolStartTime;
 
@@ -118,7 +118,7 @@ contract GrapeRewardPool {
         }
     }
 
-    // Update the given pool's GRAPE allocation point. Can only be called by the owner.
+    // Update the given pool's GLXY allocation point. Can only be called by the owner.
     function set(uint256 _pid, uint256 _allocPoint) public onlyOperator {
         massUpdatePools();
         PoolInfo storage pool = poolInfo[_pid];
@@ -249,14 +249,14 @@ contract GrapeRewardPool {
         emit EmergencyWithdraw(msg.sender, _pid, _amount);
     }
 
-    // Safe grape transfer function, just in case if rounding error causes pool to not have enough Grapes.
+    // Safe galaxy transfer function, just in case if rounding error causes pool to not have enough Grapes.
     function safeGrapeTransfer(address _to, uint256 _amount) internal {
-        uint256 _grapeBal = grape.balanceOf(address(this));
+        uint256 _grapeBal = galaxy.balanceOf(address(this));
         if (_grapeBal > 0) {
             if (_amount > _grapeBal) {
-                grape.safeTransfer(_to, _grapeBal);
+                galaxy.safeTransfer(_to, _grapeBal);
             } else {
-                grape.safeTransfer(_to, _amount);
+                galaxy.safeTransfer(_to, _amount);
             }
         }
     }
@@ -272,7 +272,7 @@ contract GrapeRewardPool {
     ) external onlyOperator {
         if (block.timestamp < epochEndTimes[1] + 30 days) {
             // do not allow to drain token if less than 30 days after farming
-            require(_token != grape, "!grape");
+            require(_token != galaxy, "!galaxy");
             uint256 length = poolInfo.length;
             for (uint256 pid = 0; pid < length; ++pid) {
                 PoolInfo storage pool = poolInfo[pid];

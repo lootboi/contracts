@@ -6,8 +6,8 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 
-// Note that this pool has no minter key of wine (rewards).
-// Instead, the governance will call wine distributeReward method and send reward to this pool at the beginning.
+// Note that this pool has no minter key of gshare (rewards).
+// Instead, the governance will call gshare distributeReward method and send reward to this pool at the beginning.
 contract WineRewardPool {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
@@ -24,13 +24,13 @@ contract WineRewardPool {
     // Info of each pool.
     struct PoolInfo {
         IERC20 token; // Address of LP token contract.
-        uint256 allocPoint; // How many allocation points assigned to this pool. Wine to distribute per block.
-        uint256 lastRewardTime; // Last time that wine distribution occurs.
-        uint256 accWinePerShare; // Accumulated wine per share, times 1e18. See below.
+        uint256 allocPoint; // How many allocation points assigned to this pool. GShare to distribute per block.
+        uint256 lastRewardTime; // Last time that gshare distribution occurs.
+        uint256 accWinePerShare; // Accumulated gshare per share, times 1e18. See below.
         bool isStarted; // if lastRewardTime has passed
     }
 
-    IERC20 public wine;
+    IERC20 public gshare;
 
     // Info of each pool.
     PoolInfo[] public poolInfo;
@@ -41,13 +41,13 @@ contract WineRewardPool {
     // Total allocation points. Must be the sum of all allocation points in all pools.
     uint256 public totalAllocPoint = 0;
 
-    // The time when wine mining starts.
+    // The time when gshare mining starts.
     uint256 public poolStartTime;
 
-    // The time when wine mining ends.
+    // The time when gshare mining ends.
     uint256 public poolEndTime;
 
-    uint256 public winePerSecond = 0.00128253 ether; // 41000 wine / (370 days * 24h * 60min * 60s)
+    uint256 public winePerSecond = 0.00128253 ether; // 41000 gshare / (370 days * 24h * 60min * 60s)
     uint256 public runningTime = 370 days; // 370 days
     uint256 public constant TOTAL_REWARDS = 41000 ether;
 
@@ -57,11 +57,11 @@ contract WineRewardPool {
     event RewardPaid(address indexed user, uint256 amount);
 
     constructor(
-        address _wine,
+        address _gshare,
         uint256 _poolStartTime
     ) public {
         require(block.timestamp < _poolStartTime, "late");
-        if (_wine != address(0)) wine = IERC20(_wine);
+        if (_gshare != address(0)) gshare = IERC20(_gshare);
         poolStartTime = _poolStartTime;
         poolEndTime = poolStartTime + runningTime;
         operator = msg.sender;
@@ -120,7 +120,7 @@ contract WineRewardPool {
         }
     }
 
-    // Update the given pool's wine allocation point. Can only be called by the owner.
+    // Update the given pool's gshare allocation point. Can only be called by the owner.
     function set(uint256 _pid, uint256 _allocPoint) public onlyOperator {
         massUpdatePools();
         PoolInfo storage pool = poolInfo[_pid];
@@ -146,7 +146,7 @@ contract WineRewardPool {
         }
     }
 
-    // View function to see pending Wine on frontend.
+    // View function to see pending GShare on frontend.
     function pendingShare(uint256 _pid, address _user) external view returns (uint256) {
         PoolInfo storage pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][_user];
@@ -243,14 +243,14 @@ contract WineRewardPool {
         emit EmergencyWithdraw(msg.sender, _pid, _amount);
     }
 
-    // Safe wine transfer function, just in case if rounding error causes pool to not have enough wine.
+    // Safe gshare transfer function, just in case if rounding error causes pool to not have enough gshare.
     function safeWineTransfer(address _to, uint256 _amount) internal {
-        uint256 _wineBal = wine.balanceOf(address(this));
+        uint256 _wineBal = gshare.balanceOf(address(this));
         if (_wineBal > 0) {
             if (_amount > _wineBal) {
-                wine.safeTransfer(_to, _wineBal);
+                gshare.safeTransfer(_to, _wineBal);
             } else {
-                wine.safeTransfer(_to, _amount);
+                gshare.safeTransfer(_to, _amount);
             }
         }
     }
@@ -261,8 +261,8 @@ contract WineRewardPool {
 
     function governanceRecoverUnsupported(IERC20 _token, uint256 amount, address to) external onlyOperator {
         if (block.timestamp < poolEndTime + 90 days) {
-            // do not allow to drain core token (wine or lps) if less than 90 days after pool ends
-            require(_token != wine, "wine");
+            // do not allow to drain core token (gshare or lps) if less than 90 days after pool ends
+            require(_token != gshare, "gshare");
             uint256 length = poolInfo.length;
             for (uint256 pid = 0; pid < length; ++pid) {
                 PoolInfo storage pool = poolInfo[pid];

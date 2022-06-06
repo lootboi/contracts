@@ -7,8 +7,8 @@ import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 
 
-// Note that this pool has no minter key of GRAPE (rewards).
-// Instead, the governance will call GRAPE distributeReward method and send reward to this pool at the beginning.
+// Note that this pool has no minter key of GLXY (rewards).
+// Instead, the governance will call GLXY distributeReward method and send reward to this pool at the beginning.
 contract GrapeGenesisRewardPool {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
@@ -25,14 +25,14 @@ contract GrapeGenesisRewardPool {
     // Info of each pool.
     struct PoolInfo {
         IERC20 token; // Address of LP token contract.
-        uint256 allocPoint; // How many allocation points assigned to this pool. GRAPE to distribute.
-        uint256 lastRewardTime; // Last time that GRAPE distribution occurs.
-        uint256 accGrapePerShare; // Accumulated GRAPE per share, times 1e18. See below.
+        uint256 allocPoint; // How many allocation points assigned to this pool. GLXY to distribute.
+        uint256 lastRewardTime; // Last time that GLXY distribution occurs.
+        uint256 accGrapePerShare; // Accumulated GLXY per share, times 1e18. See below.
         bool isStarted; // if lastRewardBlock has passed
     }
 
-    IERC20 public grape;
-    address public mim;
+    IERC20 public galaxy;
+    address public tri;
 
     // Info of each pool.
     PoolInfo[] public poolInfo;
@@ -43,20 +43,20 @@ contract GrapeGenesisRewardPool {
     // Total allocation points. Must be the sum of all allocation points in all pools.
     uint256 public totalAllocPoint = 0;
 
-    // The time when GRAPE mining starts.
+    // The time when GLXY mining starts.
     uint256 public poolStartTime;
 
-    // The time when GRAPE mining ends.
+    // The time when GLXY mining ends.
     uint256 public poolEndTime;
 
     // TESTNET
-    uint256 public grapePerSecond = 0.66667 ether; // 2400 GRAPE / (1h * 60min * 60s)
+    uint256 public grapePerSecond = 0.66667 ether; // 2400 GLXY / (1h * 60min * 60s)
     uint256 public runningTime = 1 hours; // 1 hours
     uint256 public constant TOTAL_REWARDS = 2400 ether;
     // END TESTNET
 
     // MAINNET
-    //uint256 public grapePerSecond = 0.02777 ether; // 2400 GRAPE / (24h * 60min * 60s)
+    //uint256 public grapePerSecond = 0.02777 ether; // 2400 GLXY / (24h * 60min * 60s)
     //uint256 public runningTime = 1 days; // 1 days
     //uint256 public constant TOTAL_REWARDS = 2400 ether;
     // END MAINNET
@@ -67,13 +67,13 @@ contract GrapeGenesisRewardPool {
     event RewardPaid(address indexed user, uint256 amount);
 
     constructor(
-        address _grape,
-        address _mim,
+        address _galaxy,
+        address _tri,
         uint256 _poolStartTime
     ) public {
         require(block.timestamp < _poolStartTime, "late");
-        if (_grape != address(0)) grape = IERC20(_grape);
-        if (_mim != address(0)) mim = _mim;
+        if (_galaxy != address(0)) galaxy = IERC20(_galaxy);
+        if (_tri != address(0)) tri = _tri;
         poolStartTime = _poolStartTime;
         poolEndTime = poolStartTime + runningTime;
         operator = msg.sender;
@@ -124,7 +124,7 @@ contract GrapeGenesisRewardPool {
         }
     }
 
-    // Update the given pool's GRAPE allocation point. Can only be called by the owner.
+    // Update the given pool's GLXY allocation point. Can only be called by the owner.
     function set(uint256 _pid, uint256 _allocPoint) public onlyOperator {
         massUpdatePools();
         PoolInfo storage pool = poolInfo[_pid];
@@ -148,7 +148,7 @@ contract GrapeGenesisRewardPool {
         }
     }
 
-    // View function to see pending GRAPE on frontend.
+    // View function to see pending GLXY on frontend.
     function pendingGRAPE(uint256 _pid, address _user) external view returns (uint256) {
         PoolInfo storage pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][_user];
@@ -208,7 +208,7 @@ contract GrapeGenesisRewardPool {
         }
         if (_amount > 0) {
             pool.token.safeTransferFrom(_sender, address(this), _amount);
-            if (address(pool.token) == mim) {
+            if (address(pool.token) == tri) {
                 user.amount = user.amount.add(_amount.mul(9900).div(10000));
             } else {
                 user.amount = user.amount.add(_amount);
@@ -249,14 +249,14 @@ contract GrapeGenesisRewardPool {
         emit EmergencyWithdraw(msg.sender, _pid, _amount);
     }
 
-    // Safe GRAPE transfer function, just in case a rounding error causes pool to not have enough GRAPEs.
+    // Safe GLXY transfer function, just in case a rounding error causes pool to not have enough GRAPEs.
     function safeGrapeTransfer(address _to, uint256 _amount) internal {
-        uint256 _grapeBalance = grape.balanceOf(address(this));
+        uint256 _grapeBalance = galaxy.balanceOf(address(this));
         if (_grapeBalance > 0) {
             if (_amount > _grapeBalance) {
-                grape.safeTransfer(_to, _grapeBalance);
+                galaxy.safeTransfer(_to, _grapeBalance);
             } else {
-                grape.safeTransfer(_to, _amount);
+                galaxy.safeTransfer(_to, _amount);
             }
         }
     }
@@ -271,8 +271,8 @@ contract GrapeGenesisRewardPool {
         address to
     ) external onlyOperator {
         if (block.timestamp < poolEndTime + 90 days) {
-            // do not allow to drain core token (GRAPE or lps) if less than 90 days after pool ends
-            require(_token != grape, "grape");
+            // do not allow to drain core token (GLXY or lps) if less than 90 days after pool ends
+            require(_token != galaxy, "galaxy");
             uint256 length = poolInfo.length;
             for (uint256 pid = 0; pid < length; ++pid) {
                 PoolInfo storage pool = poolInfo[pid];
